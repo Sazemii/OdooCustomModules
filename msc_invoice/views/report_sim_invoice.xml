@@ -1,0 +1,446 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- MSC SIM (Sales Invoice Motorcycle) Document Template -->
+        <template id="msc_sim_invoice_document">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="lang" t-value="o.partner_id.lang"/>
+                    <t t-call="msc_invoice.msc_sim_external_layout" t-lang="lang">
+                        <t t-set="o" t-value="o.with_context(lang=lang)" />
+                        <t t-set="forced_vat" t-value="o.fiscal_position_id.foreign_vat"/>
+                        <div class="clearfix invoice_main">
+                            <div class="page mb-4">
+                                <t t-set="display_discount" t-value="any(l.discount for l in o.invoice_line_ids)"/>
+                                <!-- Check if invoice has VAT tax -->
+                                <t t-set="has_vat" t-value="any(line.tax_line_id.amount == 12 for line in o.line_ids.filtered(lambda l: l.tax_line_id))"/>
+                                <div class="oe_structure"></div>
+                                
+                                <!-- Sales Type and Date Section -->
+                                <div class="d-flex justify-content-between align-items-center mb-3" style="font-size: 0.9rem;">
+                                    <!-- Left side: Checkboxes -->
+                                    <div class="sales-type-section">
+                                        <div class="d-inline-block me-4">
+                                            <input type="checkbox" id="cash_sales" style="margin-right: 8px;" 
+                                                   t-att-checked="'checked' if o.is_cash_sales else None"/>
+                                            <label for="cash_sales">CASH SALES</label>
+                                        </div>
+                                        <div class="d-inline-block">
+                                            <input type="checkbox" id="charge_sales" style="margin-right: 8px;" 
+                                                   t-att-checked="'checked' if o.is_charge_sales else None"/>
+                                            <label for="charge_sales">CHARGE SALES</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Right side: Date table -->
+                                    <div class="date-section">
+                                        <table class="table table-bordered" style="font-size: 0.9rem; margin: 0; width: auto; border: 1px solid #000;">
+                                            <tr>
+                                                <td style="width: 60px; padding: 5px 10px; font-weight: normal;">Date:</td>
+                                                <td style="width: 150px; padding: 5px 10px;">
+                                                    <span t-field="o.invoice_date" t-options="{'widget': 'date'}"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                                <!-- Customer Information Table -->
+                                <table class="table table-bordered" style="font-size: 0.9rem; margin: 0; width: 100%; margin-top: -16px; border: 1px solid #000;">
+                                    <tr>
+                                        <td style="padding: 8px 12px; font-weight: 600px;">
+                                    SOLD TO: 
+                                    <!-- Show individual customer name if different from company, otherwise show company name -->
+                                    <span t-if="o.partner_id.commercial_partner_id != o.partner_id" t-field="o.partner_id.name"/>
+                                    <span t-elif="o.commercial_partner_id.name" t-field="o.commercial_partner_id.name"/>
+                                    <span t-else="">N/A</span>
+                                </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px; height: 80px; vertical-align: top;">
+                                            <div style="margin-bottom: 8px;">
+                                                Registered name: 
+                                                <!-- Always show the commercial/company name for registered name -->
+                                                <span t-field="o.commercial_partner_id.name" t-if="o.commercial_partner_id.name"/>
+                                                <span t-if="not o.commercial_partner_id.name">N/A</span>
+                                            </div>
+                                            <div style="margin-bottom: 8px;">
+                                                TIN: 
+                                                <span t-field="o.partner_id.vat" t-if="o.partner_id.vat"/>
+                                                <span t-if="not o.partner_id.vat">N/A</span>
+                                            </div>
+                                            <div>
+                                                Business Address: 
+                                                <t t-if="o.partner_id.street or o.partner_id.street2 or o.partner_id.city or o.partner_id.state_id or o.partner_id.zip or o.partner_id.country_id">
+                                                    <t t-set="address_parts" t-value="[]"/>
+                                                    <t t-if="o.partner_id.street" t-set="address_parts" t-value="address_parts + [o.partner_id.street]"/>
+                                                    <t t-if="o.partner_id.street2" t-set="address_parts" t-value="address_parts + [o.partner_id.street2]"/>
+                                                    <t t-if="o.partner_id.city" t-set="address_parts" t-value="address_parts + [o.partner_id.city]"/>
+                                                    <t t-if="o.partner_id.state_id" t-set="address_parts" t-value="address_parts + [o.partner_id.state_id.name]"/>
+                                                    <t t-if="o.partner_id.zip" t-set="address_parts" t-value="address_parts + [o.partner_id.zip]"/>
+                                                    <t t-if="o.partner_id.country_id" t-set="address_parts" t-value="address_parts + [o.partner_id.country_id.name]"/>
+                                                    <span t-out="', '.join([part for part in address_parts if part])"/>
+                                                </t>
+                                                <span t-if="not (o.partner_id.street or o.partner_id.street2 or o.partner_id.city or o.partner_id.state_id or o.partner_id.zip or o.partner_id.country_id)">N/A</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+
+                           <table style="font-size: 1rem; width: 100%; margin-top:5px; border-collapse: collapse; border: 1px solid #000;">
+    <!-- Header row with light grey background -->
+    <tr style="background-color: #f5f5f5; border-bottom: 1px solid #000; border-left: none; border-right: none; border-top: none;">
+        <td style="padding: 10px; text-align: center; font-weight: bold; width: 40%; border: none;">Item Description/Nature of Service</td>
+        <td style="padding: 10px; text-align: center; font-weight: bold; width: 20%; border: none;">Quantity</td>
+        <td style="padding: 10px; text-align: center; font-weight: bold; width: 20%; border: none;">Unit Price</td>
+        <td style="padding: 10px; text-align: center; font-weight: bold; width: 20%; border: none;">Amount</td>
+    </tr>
+    
+    <!-- Dynamic invoice lines with alternating colors -->
+    <t t-set="line_index" t-value="0"/>
+    <t t-set="wrapped_lines_count" t-value="0"/>
+    <t t-foreach="o.invoice_line_ids.filtered(lambda l: l.display_type == 'product')" t-as="line">
+        <!-- Estimate if this line will wrap based on character count (approximately 40 chars per line) -->
+        <t t-set="line_name" t-value="line.name or ''"/>
+        <t t-set="estimated_lines" t-value="max(1, (len(line_name) + 39) // 40)"/>
+        <t t-if="estimated_lines > 1" t-set="wrapped_lines_count" t-value="wrapped_lines_count + (estimated_lines - 1)"/>
+        
+        <tr t-att-style="'background-color: %s; border: none;' % ('#ffffff' if line_index % 2 == 0 else '#f9f9f9')">
+            <td style="padding: 8px; vertical-align: top; border: none;">
+                <span t-field="line.name"/>
+            </td>
+            <td style="padding: 8px; text-align: center; vertical-align: top; border: none;">
+                <span t-field="line.quantity"/>
+                <span t-field="line.product_uom_id" groups="uom.group_uom"/>
+            </td>
+            <td style="padding: 8px; text-align: right; vertical-align: top; border: none;">
+                <span t-field="line.price_unit"/>
+            </td>
+            <td style="padding: 8px; text-align: right; vertical-align: top; border: none;">
+                <span t-field="line.price_subtotal"/>
+            </td>
+        </tr>
+        <t t-set="line_index" t-value="line_index + 1"/>
+    </t>
+    
+    <!-- Fill remaining space, adjusting for wrapped lines -->
+    <t t-set="total_lines" t-value="len(o.invoice_line_ids.filtered(lambda l: l.display_type == 'product'))"/>
+    <t t-set="base_min_rows" t-value="13"/>
+    <t t-set="adjusted_min_rows" t-value="max(total_lines, base_min_rows - wrapped_lines_count)"/>
+    <t t-if="total_lines &lt; adjusted_min_rows">
+        <t t-foreach="range(adjusted_min_rows - total_lines)" t-as="empty_row">
+            <t t-set="empty_index" t-value="total_lines + empty_row"/>
+            <tr t-att-style="'background-color: %s; height: 30px; border: none;' % ('#ffffff' if empty_index % 2 == 0 else '#f9f9f9')">
+                <td style="padding: 8px; border: none;">&amp;nbsp;</td>
+                <td style="padding: 8px; border: none;">&amp;nbsp;</td>
+                <td style="padding: 8px; border: none;">&amp;nbsp;</td>
+                <td style="padding: 8px; border: none;">&amp;nbsp;</td>
+            </tr>
+        </t>
+    </t>
+</table>
+<div class="d-flex">
+                       <div class="d-flex flex-column" style="max-width: 550px;">
+                       <!-- Bottom section with two columns -->
+                       <div class="d-flex" style="margin-top: 10px;">
+
+                
+                           <!-- Left column -->
+                           <div class="d-flex flex-column" style="flex: 1; margin-right: 10px;">
+                               <!-- SC/PWD section -->
+                               <div style="font-size: 0.6rem; margin-bottom: 1px;">
+                                   <table style="width: 300px; border-collapse: collapse; border: 1px solid #000">
+                                       <tr style="height: 25px;">
+                                           <td style="border:none; padding: 3px 0px 3px 2px; width:60%">SC/PWD/NAC/MOV/SOLO Parent ID No:</td>
+                                           <td style="border:none; padding: 3px 0px 3px 2px; border-bottom: none; width:40%">
+                                               <span t-field="o.sc_pwd_nac_mov_solo_parent_id_no" t-if="o.sc_pwd_nac_mov_solo_parent_id_no"/>
+                                           </td>
+                                       </tr>
+                                       <tr style="height: 30px;">
+                                           <td style="border:none; padding: 3px 0px 3px 2px; width:60%">SC/PWD/NAC/MOV/SOLO Signature:</td>
+                                           <td style="border:none; padding: 3px 0px 3px 2px; border-bottom: none; width:100%; text-align: center; vertical-align: middle; max-height: 30px">
+                                               <img t-if="o.discount_id_signature" 
+                                                    t-att-src="image_data_uri(o.discount_id_signature)" 
+                                                    style="max-width: 100px; max-height: 30px; object-fit: contain;"/>
+                                           </td>
+                                       </tr>
+                                   </table>
+                               </div>
+                               
+                               <!-- Received amount section -->
+                               <div style="margin-bottom: 0px;">
+                                   <div style="margin-bottom: 0px;">
+                                       <input type="checkbox" id="received" style="margin-right: 5px;"/>
+                                       <label for="received" style="font-size: .9rem;">Received the amount of</label>
+                                   </div>
+                                   <div style="border-bottom: 1px solid #000; height: 20px; margin-bottom: 2px; width: 100%;"></div>
+                                   <div style="border-bottom: 1px solid #000; height: 20px; width: 100%;"></div>
+                               </div>
+                           </div>
+                           
+                           <!-- Right column - VAT Summary -->
+                           <div style="flex: 1;">
+                               <table style="width: 100%; border-collapse: collapse; border: none; font-size: 0.83rem; border: 1px solid #000;">
+                                   <tr>
+                                       <td style="border:none; padding: 6px; border-bottom: none; font-weight: bold; text-align: right; width: 50%;">VATable Sales</td>
+                                       <td style="border:none; padding: 6px; border-bottom: none; border-left: none; width: 50%; text-align: right;">
+                                           <t t-set="vatable_amount" t-value="o.amount_untaxed"/>
+                                           <span t-esc="'{:,.2f}'.format(vatable_amount)" t-if="vatable_amount"/>
+                                           <span t-if="not vatable_amount">N/A</span>
+                                       </td>
+                                   </tr>
+                            <tr>
+<td style="border:none; width:50%; font-size:0.8rem; text-align: right; padding: 2px">
+VAT
+</td>
+<td  style="border:none; width:40%; font-size:0.8rem; text-align: right; padding-right: 10px">
+<t t-set="original_vat_amount" t-value="o.amount_untaxed * 0.12 if has_vat else 0.00"/>
+<span t-esc="'{:,.2f}'.format(original_vat_amount)"/>
+</td>
+</tr>
+
+                                   <tr>
+                                       <td style="border:none; padding: 6px; border-bottom: none; font-weight: bold; text-align: right;">Zero-Rated Sales</td>
+                                       <td style="border:none; padding: 6px; border-bottom: none; border-left: none; text-align: right;">0.00</td>
+                                   </tr>
+                                   <tr>
+                                       <td style="border:none; padding: 6px; font-weight: bold; text-align: right; ">VAT-Exempt Sales</td>
+                                       <td style="border:none; padding: 6px; border-left: none; text-align: right;">0.00</td>
+                                   </tr>
+                               </table>
+                           </div>
+                       </div>
+                     <span style="display: inline-block; font-size: 0.7rem; line-height: 1.3; margin-top:5px">
+  Payable on demand in Calamba, Laguna unless otherwise arranged in writing. Interest charged on overdue accounts at the rate of 5% monthly. Court of Calamba, Laguna shall have jurisdiction over any litigation arising out of this account and customer agrees to pay the court cost and attorney’s fees. Our responsibility for the goods ceases upon delivery in good order. It is understood that the goods remain the property of MOTORCENTRAL SALES CORP. until they are fully paid for.
+</span>
+<div class="d-flex" style="width:100%">
+<div class="d-flex flex-column" style="width: 50%; line-height:0.9rem; font-size: 0.75rem">
+<span style="display: block;">
+00 Pads (50x5) 000000-000000
+</span>
+<span style="display: block;">
+BIR Authority to Print No. OCN
+</span>
+<span style="display: block;">
+Date Issued</span>
+<span style="display: block;">
+EL GUAPO Printing Press &amp; Enterprises
+</span>
+<span style="display: block;">
+E&amp;H Compd., Parian, Calamba City
+</span>
+<span style="display: block;">
+Tel No.: (049) 545-5357
+</span>
+</div>
+<div class="d-flex flex-column" style="width:50%; font-size: 0.85rem">
+<span style="display: block;">
+Accreditation No:
+</span>
+<span style="display: block;">
+Accreditation Date:
+</span> 
+<span style="display: block;">
+Permit No:
+</span> 
+<span style="display: block;">
+Date Issued:
+</span>  
+</div>
+
+</div>
+
+                       </div>
+                       <div style="max-width:285px; margin-left: 12px; margin-top: 10px;" class="d-flex flex-column">
+<table style="border: 1px solid #000">
+<tr>
+<td style="border:none; width:50%; font-size:0.8rem; text-align: right; padding: 2px">
+Total Sales (VAT Inclusive)
+</td>
+<td style="border:none; width:40%; font-size:0.8rem; text-align: right; padding-right: 10px">
+<span t-esc="'{:,.2f}'.format(o.amount_total)"/>
+</td>
+</tr>
+
+
+<tr>
+<td style="border:none; width:50%; font-size:0.8rem; text-align: right; padding: 2px">
+Less Vat
+</td>
+<td  style="border:none; width:40%; font-size:0.8rem; text-align: right; padding-right: 10px">
+<t t-set="original_vat_amount" t-value="o.amount_untaxed * 0.12 if has_vat else 0.00"/>
+<span t-esc="'{:,.2f}'.format(original_vat_amount)"/>
+</td>
+</tr>
+
+<tr>
+<td style="border:none; width:50%; font-size:0.8rem; text-align: right; padding: 2px">
+Amount Net of Vat
+</td>
+<td  style="border:none; width:40%; font-size:0.8rem; text-align: right; padding-right: 10px">
+<span t-esc="'{:,.2f}'.format(o.amount_untaxed)" t-if="o.amount_untaxed"/>
+<span t-if="not o.amount_untaxed">N/A</span>
+</td>
+</tr>
+
+<tr>
+<td style="border:none; width:50%; font-size:0.8rem; text-align: right; padding: 2px">
+Less discount <br>SC/PWD/NAC//MOV/SP</br>
+</td>
+<td  style="border:none; width:40%; font-size:0.8rem; text-align: right; padding-right: 10px">
+<t t-set="discount_amount" t-value="abs(sum(line.credit - line.debit for line in o.line_ids.filtered(lambda l: l.tax_line_id and 'discount' in l.tax_line_id.name.lower() and l.tax_line_id.amount &lt; 0)))"/>
+<span t-esc="'{:,.2f}'.format(discount_amount)" t-if="discount_amount > 0"/>
+<span t-if="discount_amount == 0">0.00</span>
+</td>
+</tr>
+
+<tr>
+<td style="border:none; width:50%; font-size:0.8rem; text-align: right; padding: 2px">
+Add VAT
+</td>
+<td  style="border:none; width:40%; font-size:0.8rem; text-align: right; padding-right: 10px">
+<t t-set="has_vat" t-value="any(line.tax_line_id.amount == 12 for line in o.line_ids.filtered(lambda l: l.tax_line_id))"/>
+<t t-set="discount_amount" t-value="abs(sum(line.credit - line.debit for line in o.line_ids.filtered(lambda l: l.tax_line_id and 'discount' in l.tax_line_id.name.lower() and l.tax_line_id.amount &lt; 0)))"/>
+<t t-set="discounted_untaxed" t-value="o.amount_untaxed - discount_amount"/>
+<t t-set="discounted_vat_amount" t-value="discounted_untaxed * 0.12 if has_vat else 0.00"/>
+<span t-esc="'{:,.2f}'.format(discounted_vat_amount)"/>
+</td>
+</tr>
+
+<tr>
+<td style="border:none; width:50%; font-size:0.8rem; text-align: right; padding: 2px" >
+Less Withholding Tax <t t-if="o.line_ids.filtered(lambda l: l.tax_line_id and (l.tax_line_id.amount &lt; 0 or 'wht' in l.tax_line_id.name.lower() or 'withholding' in l.tax_line_id.name.lower() or 'creditable' in l.tax_line_id.name.lower()) and not 'discount' in l.tax_line_id.name.lower())">(WHT <t t-esc="', '.join([str(int(abs(l.tax_line_id.amount*100))) + '%' for l in o.line_ids.filtered(lambda l: l.tax_line_id and (l.tax_line_id.amount &lt; 0 or 'wht' in l.tax_line_id.name.lower() or 'withholding' in l.tax_line_id.name.lower() or 'creditable' in l.tax_line_id.name.lower()) and not 'discount' in l.tax_line_id.name.lower()).sorted(lambda l: l.tax_line_id.name)])"/>)</t>
+</td>
+<td  style="border:none; width:40%; font-size:0.8rem; text-align: right; padding-right: 10px">
+<t t-set="discount_amount" t-value="abs(sum(line.credit - line.debit for line in o.line_ids.filtered(lambda l: l.tax_line_id and 'discount' in l.tax_line_id.name.lower() and l.tax_line_id.amount &lt; 0)))"/>
+<t t-set="discounted_untaxed" t-value="o.amount_untaxed - discount_amount"/>
+<!-- Get withholding tax lines -->
+<t t-set="wht_lines" t-value="o.line_ids.filtered(lambda l: l.tax_line_id and (l.tax_line_id.amount &lt; 0 or 'wht' in l.tax_line_id.name.lower() or 'withholding' in l.tax_line_id.name.lower() or 'creditable' in l.tax_line_id.name.lower()) and not 'discount' in l.tax_line_id.name.lower())"/>
+<t t-set="withholding_amount" t-value="abs(sum(line.credit - line.debit for line in wht_lines))" />
+<span t-esc="'{:,.2f}'.format(withholding_amount)" t-if="withholding_amount > 0"/>
+<span t-if="withholding_amount == 0">0.00</span>
+</td>
+</tr>
+
+<tr>
+<td style="font-weight:bold; border:none; font-size: 0.9rem; text-align:right;">
+TOTAL AMOUNT DUE
+</td>
+<td  style="border:none; width:0%; font-size:0.8rem; font-weight:bold; padding-right: 10px; text-align: right">
+<span t-esc="'{:,.2f}'.format(o.amount_total)"/>
+</td>
+</tr>
+
+</table>
+ <div style="border-bottom: 1px solid #000; height: 20px; width: 100%; margin-top: 80px"></div>
+ <div style="text-align: center; width: 100%; font-size: 0.9rem">Cashier/Authorized Representative</div>
+
+                            </div>
+
+                            </div>
+
+
+                          
+                                
+                               
+                            </div>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+
+        <!-- MSC SIM External Layout with MOTORCENTRAL Header -->
+        <template id="msc_sim_external_layout">
+            <t t-if="not o" t-set="o" t-value="doc"/>
+            <t t-set="company" t-value="o.company_id.sudo()"/>
+            
+            <div t-attf-class="header o_company_#{company.id}_layout">
+                <style>
+                    .motorcentral-logo {
+                        font-family: Impact, Arial, sans-serif;
+                        font-weight: bold;
+                        color: #000000;
+                        line-height: 0.9;
+                        text-align: left;
+                    }
+                    .motorcentral-main {
+                        font-size: 37px;
+                        letter-spacing: -1.4px;
+                        display: block;
+                    }
+                    .motorcentral-sub {
+                        font-size: 23px;
+                        letter-spacing: 3px;
+                        margin-top: 5px;
+                        display: block;
+                    }
+                  
+                </style>
+                
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <!-- Company Logo/Name Section -->
+                    <div class="company-info-section" style="flex-grow: 1;">
+                        <!-- MOTORCENTRAL SALES CORPORATION -->
+                        <div class="motorcentral-logo">
+                            <span class="motorcentral-main">MOTORCENTRAL</span>
+                            <span class="motorcentral-sub">SALES CORPORATION</span>
+                        </div>
+                        
+                        <!-- Branch VAT/TIN - smaller font -->
+                       <div t-if="company.branch_vat_tin or company.vat" style="font-size: 0.9rem; margin-top: 1px; color: #000000; font-weight: 600;">
+    <t t-if="company.branch_vat_tin">
+        VAT Reg. TIN: <span t-field="company.branch_vat_tin"/>
+    </t>
+    <t t-elif="company.vat">
+        VAT Reg. TIN: <span t-field="company.vat"/>
+    </t>
+</div>
+                        
+                        <!-- Branch Address in one line - smaller font -->
+                        <div style="font-size: 0.9rem; margin-top: 1px; color: #000000; line-height: 1.3;">
+                            <t t-set="address_parts" t-value="[]"/>
+                            <t t-if="company.street" t-set="address_parts" t-value="address_parts + [company.street]"/>
+                            <t t-if="company.street2" t-set="address_parts" t-value="address_parts + [company.street2]"/>
+                            <t t-if="company.city" t-set="address_parts" t-value="address_parts + [company.city]"/>
+                            <t t-if="company.state_id" t-set="address_parts" t-value="address_parts + [company.state_id.name]"/>
+                            <t t-if="company.zip" t-set="address_parts" t-value="address_parts + [company.zip]"/>
+                            <t t-if="company.country_id" t-set="address_parts" t-value="address_parts + [company.country_id.name]"/>
+                            <span t-out="', '.join([part for part in address_parts if part])"/>
+                        </div>
+                    </div>
+                    
+                    <!-- Sales Invoice and Motorcycle Text -->
+                    <div class="sales-invoice-section" style="text-align: right; padding-top: 20px;">
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #000000; margin: 0; line-height: 1; padding: 0;">SALES INVOICE</div>
+                        <div style="font-size: 1.2rem; font-weight: bold; color: #000000; text-align: center; margin: 0; line-height: 1; padding: 0; margin-top: 1px;">MOTORCYCLE</div>
+                        <div style="font-size: 0.9rem; margin-top: 10px; color: #000000;">
+                            Invoice No: <span t-field="o.name" t-if="o.name"/><span t-if="not o.name">N/A</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Body section -->
+            <div t-attf-class="article o_report_layout_standard o_table_standard o_company_#{company.id}_layout o_snail_mail"
+                 t-att-data-oe-model="o and o._name"
+                 t-att-data-oe-id="o and o.id"
+                 t-att-data-oe-lang="o and o.env.context.get('lang')">
+                <t t-call="web.address_layout"/>
+                <h2 t-out="layout_document_title"/>
+                <t t-out="0"/>
+            </div>
+
+            <!-- Custom Footer section -->
+            <div t-attf-class="footer o_company_#{company.id}_layout {{report_type != 'pdf' and 'mt-auto'}}" style="width: 100%; padding: 0; margin: 0;">
+                <div class="d-flex justify-content-between" style="font-size: 0.85rem; font-weight: 700; width: 100%; margin: 0;">
+                    <div style="flex: 1; text-align: center;">WHITE - REGISTRAR</div>
+                    <div style="flex: 1; text-align: center;">YELLOW - ACCOUNTING</div>
+                    <div style="flex: 1; text-align: center;">GREEN - BRANCH</div>
+                    <div style="flex: 1; text-align: center;">PINK - CCC</div>
+                    <div style="flex: 1; text-align: center;">BLUE - CUSTOMER</div>
+                </div>
+            </div>
+        </template>
+    </data>
+</odoo>

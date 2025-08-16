@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Inherit the invoice form view to add sales type fields -->
+        <record id="view_move_form_inherit_sales_type" model="ir.ui.view">
+            <field name="name">account.move.form.sales.type</field>
+            <field name="model">account.move</field>
+            <field name="inherit_id" ref="account.view_move_form"/>
+            <field name="arch" type="xml">
+                <!-- Add the sales type fields in the Other Info tab -->
+                <xpath expr="//group[@name='sale_info_group']/field[@name='payment_reference']" position="after">
+                    <field name="is_cash_sales" invisible="move_type not in ('out_invoice', 'out_refund')"/>
+                    <field name="is_charge_sales" invisible="move_type not in ('out_invoice', 'out_refund')"/>
+                    <field name="sc_pwd_nac_mov_solo_parent_id_no" 
+                           invisible="move_type not in ('out_invoice', 'out_refund')"
+                           placeholder="Enter Parent ID Number"/>
+                    <field name="discount_id_signature" 
+                           invisible="move_type not in ('out_invoice', 'out_refund')"
+                           widget="image" 
+                           options="{'size': [150, 70]}"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

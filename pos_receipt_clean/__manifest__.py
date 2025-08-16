@@ -1,0 +1,19 @@
+{
+    'name': 'Clean POS Receipt',
+    'version': '1.0.0',
+    'category': 'Point of Sale',
+    'summary': 'Clean POS receipt format',
+    'description': 'Simple receipt format matching sales invoice style',
+    'author': 'Your Company',
+    'depends': ['point_of_sale'],
+    'assets': {
+        'point_of_sale._assets_pos': [
+            'pos_receipt_clean/static/src/xml/receipt.xml',
+            'pos_receipt_clean/static/src/xml/receipt_screen.xml',
+            'pos_receipt_clean/static/src/css/receipt.css',
+            'pos_receipt_clean/static/src/js/receipt_screen.js',
+        ],
+    },
+    'installable': True,
+    'auto_install': False,
+}

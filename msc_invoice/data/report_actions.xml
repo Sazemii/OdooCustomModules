@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Sales Invoice Motorcycle Report Action -->
+        <record id="action_report_msc_sim_invoice" model="ir.actions.report">
+            <field name="name">Sales Invoice Motorcycle</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">msc_invoice.msc_sim_invoice_document</field>
+            <field name="report_file">msc_invoice.msc_sim_invoice_document</field>
+            <field name="print_report_name">'Invoice - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_type">report</field>
+        </record>
+
+        <!-- Sales Invoice Spareparts Report Action -->
+        <record id="action_report_msc_sis_invoice" model="ir.actions.report">
+            <field name="name">Sales Invoice Spareparts</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">msc_invoice.msc_sis_invoice_document</field>
+            <field name="report_file">msc_invoice.msc_sis_invoice_document</field>
+            <field name="print_report_name">'Invoice - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>
