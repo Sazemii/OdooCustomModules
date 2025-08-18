@@ -2,60 +2,63 @@
 <templates id="template" xml:space="preserve">
     
     <t t-name="point_of_sale.OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
-        <xpath expr="//div[hasclass('pos-receipt')]" position="replace">
-            <div class="pos-receipt clean-receipt p-2">
+        <xpath expr="//div[@class='pos-receipt p-2']" position="replace">
+            <div class="pos-receipt p-2" style="font-family: monospace; font-size: 12px; line-height: 1.4; text-align: center; width: 80mm; margin: 0 auto;">
             
-            <!-- Company Name -->
-            <div class="company-header">
-                <h3><t t-esc="props.data.headerData.company.name"/></h3>
-                <div class="invoice-title">** SALES INVOICE **</div>
-            </div>
-            
-            <!-- Receipt Info -->
-            <div class="receipt-info">
-                <div>SI #: <t t-esc="props.data.name"/></div>
-                <div>Date: <t t-esc="props.data.date"/> </div>
-            </div>
-            
-            <!-- Items -->
-            <div class="items-list">
-                <t t-foreach="props.data.orderlines" t-as="line" t-key="line_index">
-                    <div class="item">
-                        <div class="item-name"><t t-esc="line.product_name"/></div>
-                        <div class="item-calc"><t t-esc="line.qty"/> x <t t-esc="props.formatCurrency(line.price_unit)"/> = <t t-esc="props.formatCurrency(line.price_subtotal_incl)"/></div>
+                <!-- Company Name -->
+                <div style="margin: 10px 0;">
+                    <h3 style="margin: 10px 0 5px 0; font-size: 16px; font-weight: bold;">
+                        <t t-esc="props.data.headerData.company.name"/>
+                    </h3>
+                    <div style="font-size: 14px; font-weight: bold; margin: 10px 0;">
+                        ** SALES INVOICE **
                     </div>
-                </t>
-            </div>
-            
-            <!-- Total -->
-            <div class="total-section">
-                <div class="total-line">TOTAL AMOUNT DUE: <t t-esc="props.formatCurrency(props.data.amount_total)"/></div>
-            </div>
-            
-            <!-- Payment -->
-            <div class="payment-section">
-                <t t-foreach="props.data.paymentlines" t-as="payment" t-key="payment_index">
-                    <div><t t-esc="payment.name"/>: <t t-esc="props.formatCurrency(payment.amount)"/></div>
-                </t>
-                <div>TOTAL PAID: <t t-esc="props.formatCurrency(props.data.amount_paid)"/></div>
-            </div>
-            
-            <!-- Footer -->
-            <div class="receipt-footer">
-                <strong>THIS SERVES AS YOUR SALES INVOICE</strong>
-            </div>
-            
-            <!-- Essential elements for printing system -->
-            <div class="before-footer" />
-            <div class="pos-receipt-order-data" />
-            <div class="after-footer" />
-            
-            <!-- Order data required by print system -->
-            <div class="pos-receipt-order-data" style="display: none;">
-                <div t-esc="props.data.name" />
-                <div id="order-date" t-esc="props.data.date" />
-            </div>
-            
+                </div>
+                
+                <!-- Receipt Info -->
+                <div style="text-align: left; margin: 15px 0; border-bottom: 1px dashed #000; padding-bottom: 8px;">
+                    <div style="margin-bottom: 3px;">SI #: <t t-esc="props.data.name"/></div>
+                    <div style="margin-bottom: 3px;">Date: <t t-esc="props.data.date"/></div>
+                </div>
+                
+                <!-- Items -->
+                <div style="text-align: left; margin: 15px 0; border-bottom: 1px dashed #000; padding-bottom: 8px;">
+                    <t t-foreach="props.data.orderlines" t-as="line" t-key="line_index">
+                        <div style="margin-bottom: 8px;">
+                            <div style="font-weight: bold; margin-bottom: 2px;">
+                                <t t-esc="line.product_name"/>
+                            </div>
+                            <div style="font-size: 11px; color: #666;">
+                                <t t-esc="line.qty"/> x <t t-esc="props.formatCurrency(line.price_unit)"/> = <t t-esc="props.formatCurrency(line.price_subtotal_incl)"/>
+                            </div>
+                        </div>
+                    </t>
+                </div>
+                
+                <!-- Total -->
+                <div style="text-align: left; margin: 15px 0; border-bottom: 1px dashed #000; padding-bottom: 8px;">
+                    <div style="margin-bottom: 3px; font-weight: bold;">
+                        TOTAL AMOUNT DUE: <t t-esc="props.formatCurrency(props.data.amount_total)"/>
+                    </div>
+                </div>
+                
+                <!-- Payment -->
+                <div style="text-align: left; margin: 15px 0; border-bottom: 1px dashed #000; padding-bottom: 8px;">
+                    <t t-foreach="props.data.paymentlines" t-as="payment" t-key="payment_index">
+                        <div style="margin-bottom: 3px;">
+                            <t t-esc="payment.name"/>: <t t-esc="props.formatCurrency(payment.amount)"/>
+                        </div>
+                    </t>
+                    <div style="margin-bottom: 3px; font-weight: bold;">
+                        TOTAL PAID: <t t-esc="props.formatCurrency(props.data.amount_paid)"/>
+                    </div>
+                </div>
+                
+                <!-- Footer -->
+                <div style="font-weight: bold; margin-top: 20px; text-align: center; font-size: 12px;">
+                    THIS SERVES AS YOUR SALES INVOICE
+                </div>
+                
             </div>
         </xpath>
     </t>
