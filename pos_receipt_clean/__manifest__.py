@@ -3,7 +3,7 @@
     'version': '1.0.0',
     'category': 'Point of Sale',
     'summary': 'Clean POS receipt format',
-    'description': 'Simple receipt format matching sales invoice style',
+    'description': 'A sales invoice receipt modifier for POS customizations',
     'author': 'Your Company',
     'depends': ['point_of_sale'],
     'assets': {

@@ -4,7 +4,7 @@
     'category': 'Accounting',
     'summary': 'Custom invoice report with company branch information',
     'description': """
-        Custom invoice report
+        Custom invoice report for MSC
     """,
     'author': 'Your Company',
     'license': 'LGPL-3',
