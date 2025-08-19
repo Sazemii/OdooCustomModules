@@ -33,8 +33,8 @@
                     <br/><br/>
                 </div>
 
-                <!-- Order Lines - Temporarily removed due to rendering issues -->
-                <!-- <div t-foreach="props.data.orderlines" t-as="line" t-key="line_index">
+                <!-- Order Lines -->
+                <div t-foreach="props.data.orderlines" t-as="line" t-key="line_index">
                     <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
                         <div style="flex: 1;">
                             <t t-esc="line.product_name"/>
@@ -47,7 +47,7 @@
                             <t t-esc="props.formatCurrency(line.price_display)"/>
                         </div>
                     </div>
-                </div> -->
+                </div>
 
                 <div style="border-top: 1px solid #000; margin: 10px 0;"></div>
 
