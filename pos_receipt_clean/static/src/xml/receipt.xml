@@ -7,7 +7,7 @@
             <div class="pos-receipt" style="padding: 0px; margin: 0px; position: relative; width: 100%;">
                 <!-- Header Section -->
                 <div class="pos-receipt-center-align">
-                    <div style="font-weight: bold; font-size: 14px;"><t t-esc="props.data.headerData.company.name"/>UPDATED</div>
+                    <div style="font-weight: bold; font-size: 14px;"><t t-esc="props.data.headerData.company.name"/>UPD</div>
                     <div style="font-size: 12px;">
                         MIN NO.: <t t-esc="props.data.headerData.company.vat or 'MIN000000012'"/>
                     </div>
@@ -37,14 +37,14 @@
                 <div t-foreach="props.data.orderlines" t-as="line" t-key="line_index">
                     <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
                         <div style="flex: 1;">
-                            <t t-esc="line.product_name"/>
-                            <t t-if="line.qty != 1">
+                            <t t-esc="line.productName"/>
+                            <t t-if="line.qty != '1'">
                                 <br/>
-                                <span style="margin-left: 10px;"><t t-esc="line.qty"/> x <t t-esc="props.formatCurrency(line.price)"/></span>
+                                <span style="margin-left: 10px;"><t t-esc="line.qty"/> x <t t-esc="line.unitPrice"/></span>
                             </t>
                         </div>
                         <div style="text-align: right; min-width: 60px;">
-                            <t t-esc="props.formatCurrency(line.price_display)"/>
+                            <t t-esc="line.price"/>
                         </div>
                     </div>
                 </div>
