@@ -2,12 +2,12 @@
 <templates id="template" xml:space="preserve">
     
     <t t-name="point_of_sale.OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
-        <!-- Replace the entire receipt content to match the template -->
+        <!-- Replaced the entire receipt content to match the template -->
         <xpath expr="//div[@class='pos-receipt p-2']" position="replace">
             <div class="pos-receipt" style="padding: 0px; margin: 0px; position: relative; width: 100%;">
                 <!-- Header Section -->
                 <div class="pos-receipt-center-align">
-                    <div style="font-weight: bold; font-size: 14px;"><t t-esc="props.data.headerData.company.name"/>UPD</div>
+                    <div style="font-weight: bold; font-size: 14px;"><t t-esc="props.data.headerData.company.name"/></div>
                     <div style="font-size: 12px;">
                         MIN NO.: <t t-esc="props.data.headerData.company.vat or 'MIN000000012'"/>
                     </div>
