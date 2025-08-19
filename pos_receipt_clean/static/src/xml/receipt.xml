@@ -26,7 +26,7 @@
                 <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
 
                 <!-- Transaction Details -->
-                <div style="font-size: 11px;">
+                <div style="font-size: 12px;">
                     Transaction #: <t t-esc="props.data.name"/>
                     <br/>
                     Date: <t t-esc="props.data.date"/>
@@ -38,8 +38,8 @@
 
                 <!-- Order Lines -->
                 <div t-foreach="props.data.orderlines" t-as="line" t-key="line_index">
-                    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
-                        <div style="flex: 1; text-transform: uppercase">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px;">
+                        <div style="font-size: 13px;flex: 1; text-transform: uppercase">
                             <t t-esc="line.productName"/>
                             <t t-if="line.qty != '1'">
                                 <br/>
@@ -55,7 +55,7 @@
                 <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
 
                 <!-- Subtotal -->
-                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
                     <span>Subtotal:</span>
                     <span><t t-esc="props.formatCurrency(props.data.taxTotals.base_amount_currency)"/></span>
                 </div>
@@ -65,11 +65,11 @@
                 <t t-set="vatAmount" t-value="totalAmount * 0.12 / 1.12"/>
                 <t t-set="netAmount" t-value="totalAmount - vatAmount"/>
                 
-                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
                     <span>Price Net of VAT:</span>
                     <span><t t-esc="props.formatCurrency(netAmount)"/></span>
                 </div>
-                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px;">
+                <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 5px;">
                     <span>VAT Amount:</span>
                     <span><t t-esc="props.formatCurrency(vatAmount)"/></span>
                 </div>
@@ -84,18 +84,18 @@
 
                 <!-- Payment Lines -->
                 <div t-foreach="props.data.paymentlines" t-as="line" t-key="line_index">
-                    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px;">
                         <span><t t-esc="line.name"/>:</span>
                         <span><t t-esc="props.formatCurrency(line.amount)"/></span>
                     </div>
                 </div>
 
-                <div t-if="props.data.show_change" style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px;">
+                <div t-if="props.data.show_change" style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 3px;">
                     <span>Change:</span>
                     <span><t t-esc="props.formatCurrency(props.data.order_change)"/></span>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 11px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 12px; margin-bottom: 10px;">
                     <span>TOTAL PAID:</span>
                     <span><t t-esc="props.formatCurrency(props.data.taxTotals.order_total)"/></span>
                 </div>
@@ -103,7 +103,7 @@
                 <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
 
                 <!-- VAT Breakdown -->
-                <div style="font-size: 11px;">
+                <div style="font-size: 12px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
                         <span>VATable Sales:</span>
                         <span><t t-esc="props.formatCurrency(netAmount)"/></span>
