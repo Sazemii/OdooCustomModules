@@ -8,20 +8,22 @@
                 <!-- Header Section -->
                 <div class="pos-receipt-center-align">
                     <div style="font-weight: bold; font-size: 14px;"><t t-esc="props.data.headerData.company.name"/></div>
-                    <div style="font-size: 12px;">
+                    <div style="font-size: 9px;">
                         MIN NO.: <t t-esc="props.data.headerData.company.vat or 'MIN000000012'"/>
                     </div>
-                    <div style="font-size: 12px;">
+                    <div style="font-size: 9px;">
                         SERIAL NO.: <t t-esc="props.data.headerData.company.company_registry or 'SN000000013'"/>
                     </div>
-                    <br/>
+                    <div style="font-size: 10px"> 
+                        Digima v1.0 Test 
+                    </div>
                     <div style="font-weight: bold; font-size: 14px;">** SALES INVOICE **</div>
-                    <div style="font-size: 12px;">
+                    <div style="font-size: 14px; font-weight: bold">
                         SI #: <t t-esc="props.data.name"/>
                     </div>
-                    <div style="font-size: 12px;">REPRINT</div>
-                    <br/>
+                    <div style="font-size: 14x;">** REPRINT **</div>
                 </div>
+                <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
 
                 <!-- Transaction Details -->
                 <div style="font-size: 11px;">
@@ -30,13 +32,14 @@
                     Date: <t t-esc="props.data.date"/>
                     <br/>
                     SI Print: 2
-                    <br/><br/>
                 </div>
+                <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
+
 
                 <!-- Order Lines -->
                 <div t-foreach="props.data.orderlines" t-as="line" t-key="line_index">
                     <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
-                        <div style="flex: 1;">
+                        <div style="flex: 1; text-transform: uppercase">
                             <t t-esc="line.productName"/>
                             <t t-if="line.qty != '1'">
                                 <br/>
@@ -49,7 +52,7 @@
                     </div>
                 </div>
 
-                <div style="border-top: 1px solid #000; margin: 10px 0;"></div>
+                <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
 
                 <!-- Subtotal -->
                 <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px;">
@@ -58,24 +61,26 @@
                 </div>
 
                 <!-- VAT Details -->
+                <t t-set="totalAmount" t-value="props.data.taxTotals.order_total"/>
+                <t t-set="vatAmount" t-value="totalAmount * 0.12 / 1.12"/>
+                <t t-set="netAmount" t-value="totalAmount - vatAmount"/>
+                
                 <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px;">
                     <span>Price Net of VAT:</span>
-                    <span><t t-esc="props.formatCurrency(props.data.taxTotals.base_amount_currency)"/></span>
+                    <span><t t-esc="props.formatCurrency(netAmount)"/></span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px;">
                     <span>VAT Amount:</span>
-                    <span><t t-esc="props.formatCurrency(props.data.taxTotals.tax_amount_currency)"/></span>
+                    <span><t t-esc="props.formatCurrency(vatAmount)"/></span>
                 </div>
-
-                <div style="border-top: 1px solid #000; margin: 10px 0;"></div>
-
-                <!-- Total -->
-                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 12px; margin-bottom: 10px;">
+  <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 12px; margin-bottom: 10px;">
                     <span>TOTAL AMOUNT DUE:</span>
                     <span><t t-esc="props.formatCurrency(props.data.taxTotals.order_total)"/></span>
                 </div>
 
-                <div style="border-top: 1px solid #000; margin: 10px 0;"></div>
+                <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
+
+
 
                 <!-- Payment Lines -->
                 <div t-foreach="props.data.paymentlines" t-as="line" t-key="line_index">
@@ -95,17 +100,17 @@
                     <span><t t-esc="props.formatCurrency(props.data.taxTotals.order_total)"/></span>
                 </div>
 
-                <div style="border-top: 1px solid #000; margin: 10px 0;"></div>
+                <div style="border-top: 0.5px solid #000; margin: 7px 0; height: 0; transform: scaleY(0.5);"></div>
 
                 <!-- VAT Breakdown -->
                 <div style="font-size: 11px;">
                     <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
                         <span>VATable Sales:</span>
-                        <span><t t-esc="props.formatCurrency(props.data.taxTotals.base_amount_currency)"/></span>
+                        <span><t t-esc="props.formatCurrency(netAmount)"/></span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
                         <span>VAT Amount:</span>
-                        <span><t t-esc="props.formatCurrency(props.data.taxTotals.tax_amount_currency)"/></span>
+                        <span><t t-esc="props.formatCurrency(vatAmount)"/></span>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
                         <span>VAT Exempt Sale:</span>
@@ -125,12 +130,11 @@
                     <div>TIN:</div>
                     <div>POS Registration No.:</div>
                     <div>PTU No.:</div>
-                    <br/>
-                    <div>Courtesy Point Technologies, Inc.</div>
-                    <div>Unit #203, The Peak Tower</div>
-                    <div>107 L.P. Leviste St., Salcedo Village</div>
-                    <div>Makati City, Metro Manila</div>
-                    <div>VAT REG TIN: 225-048-850-00000</div>
+                    <br/>s
+                    <div>Digima Web Solutions Inc. </div>
+                    <div>967, Tres Hermanas Building,</div>
+                    <div>Quezon City, 1104 Metro Manila</div>
+                    <div>VAT REG TIN: 000-000-000-00000</div>
                     <div>Acc. No. 11111111111111111111</div>
                     <div>Date/Time issued: <t t-esc="props.data.date"/></div>
                     <div>PTU No.:</div>
