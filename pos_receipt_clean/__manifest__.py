@@ -9,8 +9,6 @@
     'assets': {
         'point_of_sale._assets_pos': [
             'pos_receipt_clean/static/src/xml/receipt.xml',
-            'pos_receipt_clean/static/src/xml/receipt_screen.xml',
-            'pos_receipt_clean/static/src/js/receipt_screen.js',
         ],
     },
     'installable': True,

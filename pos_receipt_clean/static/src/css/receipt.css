@@ -90,13 +90,57 @@
 
 /* Print styles */
 @media print {
+    /* Remove all default margins and padding from html, body */
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+    }
+    
+    /* Remove margins from all containers that might add padding */
+    .main, .modal-content, .modal-body, .pos-receipt-container,
+    .o_receipt_screen, .receipt-screen, .screen-content,
+    body > *, body > * > *, body > * > * > * {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Specifically target the receipt */
+    .pos-receipt {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: none !important;
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        transform: none !important;
+    }
+    
     .clean-receipt {
         width: 100%;
+        margin: 0 !important;
+        padding: 0 !important;
         -webkit-print-color-adjust: exact;
     }
     
     .clean-receipt .before-footer,
     .clean-receipt .after-footer {
         display: none;
+    }
+    
+    /* Remove any page margins set by the browser */
+    @page {
+        margin: 0 !important;
+        padding: 0 !important;
+        size: auto;
+    }
+    
+    /* Target any wrapper divs that might add spacing */
+    div[class*="receipt"], div[class*="pos-"], 
+    .screen, .screen-content, .receipt-container {
+        margin: 0 !important;
+        padding: 0 !important;
     }
 }

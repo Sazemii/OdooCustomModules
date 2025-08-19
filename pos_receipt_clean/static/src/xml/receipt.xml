@@ -2,63 +2,147 @@
 <templates id="template" xml:space="preserve">
     
     <t t-name="point_of_sale.OrderReceipt" t-inherit="point_of_sale.OrderReceipt" t-inherit-mode="extension">
+        <!-- Replace the entire receipt content to match the template -->
         <xpath expr="//div[@class='pos-receipt p-2']" position="replace">
-            <div class="pos-receipt p-2" style="font-family: monospace; font-size: 12px; line-height: 1.4; text-align: center; width: 80mm; margin: 0 auto;">
-            
-                <!-- Company Name -->
-                <div style="margin: 10px 0;">
-                    <h3 style="margin: 10px 0 5px 0; font-size: 16px; font-weight: bold;">
-                        <t t-esc="props.data.headerData.company.name"/>
-                    </h3>
-                    <div style="font-size: 14px; font-weight: bold; margin: 10px 0;">
-                        ** SALES INVOICE **
+            <div class="pos-receipt" style="padding: 0px; margin: 0px; position: relative; width: 100%;">
+                <!-- Header Section -->
+                <div class="pos-receipt-center-align">
+                    <div style="font-weight: bold; font-size: 14px;"><t t-esc="props.data.headerData.company.name"/>UPDATED</div>
+                    <div style="font-size: 12px;">
+                        MIN NO.: <t t-esc="props.data.headerData.company.vat or 'MIN000000012'"/>
                     </div>
+                    <div style="font-size: 12px;">
+                        SERIAL NO.: <t t-esc="props.data.headerData.company.company_registry or 'SN000000013'"/>
+                    </div>
+                    <br/>
+                    <div style="font-weight: bold; font-size: 14px;">** SALES INVOICE **</div>
+                    <div style="font-size: 12px;">
+                        SI #: <t t-esc="props.data.name"/>
+                    </div>
+                    <div style="font-size: 12px;">REPRINT</div>
+                    <br/>
                 </div>
-                
-                <!-- Receipt Info -->
-                <div style="text-align: left; margin: 15px 0; border-bottom: 1px dashed #000; padding-bottom: 8px;">
-                    <div style="margin-bottom: 3px;">SI #: <t t-esc="props.data.name"/></div>
-                    <div style="margin-bottom: 3px;">Date: <t t-esc="props.data.date"/></div>
+
+                <!-- Transaction Details -->
+                <div style="font-size: 11px;">
+                    Transaction #: <t t-esc="props.data.name"/>
+                    <br/>
+                    Date: <t t-esc="props.data.date"/>
+                    <br/>
+                    SI Print: 2
+                    <br/><br/>
                 </div>
-                
-                <!-- Items -->
-                <div style="text-align: left; margin: 15px 0; border-bottom: 1px dashed #000; padding-bottom: 8px;">
-                    <t t-foreach="props.data.orderlines" t-as="line" t-key="line_index">
-                        <div style="margin-bottom: 8px;">
-                            <div style="font-weight: bold; margin-bottom: 2px;">
-                                <t t-esc="line.product_name"/>
-                            </div>
-                            <div style="font-size: 11px; color: #666;">
-                                <t t-esc="line.qty"/> x <t t-esc="props.formatCurrency(line.price_unit)"/> = <t t-esc="props.formatCurrency(line.price_subtotal_incl)"/>
-                            </div>
+
+                <!-- Order Lines - Temporarily removed due to rendering issues -->
+                <!-- <div t-foreach="props.data.orderlines" t-as="line" t-key="line_index">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 2px;">
+                        <div style="flex: 1;">
+                            <t t-esc="line.product_name"/>
+                            <t t-if="line.qty != 1">
+                                <br/>
+                                <span style="margin-left: 10px;"><t t-esc="line.qty"/> x <t t-esc="props.formatCurrency(line.price)"/></span>
+                            </t>
                         </div>
-                    </t>
+                        <div style="text-align: right; min-width: 60px;">
+                            <t t-esc="props.formatCurrency(line.price_display)"/>
+                        </div>
+                    </div>
+                </div> -->
+
+                <div style="border-top: 1px solid #000; margin: 10px 0;"></div>
+
+                <!-- Subtotal -->
+                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px;">
+                    <span>Subtotal:</span>
+                    <span><t t-esc="props.formatCurrency(props.data.taxTotals.base_amount_currency)"/></span>
                 </div>
-                
+
+                <!-- VAT Details -->
+                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px;">
+                    <span>Price Net of VAT:</span>
+                    <span><t t-esc="props.formatCurrency(props.data.taxTotals.base_amount_currency)"/></span>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 5px;">
+                    <span>VAT Amount:</span>
+                    <span><t t-esc="props.formatCurrency(props.data.taxTotals.tax_amount_currency)"/></span>
+                </div>
+
+                <div style="border-top: 1px solid #000; margin: 10px 0;"></div>
+
                 <!-- Total -->
-                <div style="text-align: left; margin: 15px 0; border-bottom: 1px dashed #000; padding-bottom: 8px;">
-                    <div style="margin-bottom: 3px; font-weight: bold;">
-                        TOTAL AMOUNT DUE: <t t-esc="props.formatCurrency(props.data.amount_total)"/>
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 12px; margin-bottom: 10px;">
+                    <span>TOTAL AMOUNT DUE:</span>
+                    <span><t t-esc="props.formatCurrency(props.data.taxTotals.order_total)"/></span>
+                </div>
+
+                <div style="border-top: 1px solid #000; margin: 10px 0;"></div>
+
+                <!-- Payment Lines -->
+                <div t-foreach="props.data.paymentlines" t-as="line" t-key="line_index">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px;">
+                        <span><t t-esc="line.name"/>:</span>
+                        <span><t t-esc="props.formatCurrency(line.amount)"/></span>
                     </div>
                 </div>
-                
-                <!-- Payment -->
-                <div style="text-align: left; margin: 15px 0; border-bottom: 1px dashed #000; padding-bottom: 8px;">
-                    <t t-foreach="props.data.paymentlines" t-as="payment" t-key="payment_index">
-                        <div style="margin-bottom: 3px;">
-                            <t t-esc="payment.name"/>: <t t-esc="props.formatCurrency(payment.amount)"/>
-                        </div>
-                    </t>
-                    <div style="margin-bottom: 3px; font-weight: bold;">
-                        TOTAL PAID: <t t-esc="props.formatCurrency(props.data.amount_paid)"/>
+
+                <div t-if="props.data.show_change" style="display: flex; justify-content: space-between; font-size: 11px; margin-bottom: 3px;">
+                    <span>Change:</span>
+                    <span><t t-esc="props.formatCurrency(props.data.order_change)"/></span>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 11px; margin-bottom: 10px;">
+                    <span>TOTAL PAID:</span>
+                    <span><t t-esc="props.formatCurrency(props.data.taxTotals.order_total)"/></span>
+                </div>
+
+                <div style="border-top: 1px solid #000; margin: 10px 0;"></div>
+
+                <!-- VAT Breakdown -->
+                <div style="font-size: 11px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>VATable Sales:</span>
+                        <span><t t-esc="props.formatCurrency(props.data.taxTotals.base_amount_currency)"/></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>VAT Amount:</span>
+                        <span><t t-esc="props.formatCurrency(props.data.taxTotals.tax_amount_currency)"/></span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 3px;">
+                        <span>VAT Exempt Sale:</span>
+                        <span>0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Zero-Rated Sale:</span>
+                        <span>0.00</span>
                     </div>
                 </div>
-                
-                <!-- Footer -->
-                <div style="font-weight: bold; margin-top: 20px; text-align: center; font-size: 12px;">
+
+                <!-- Footer Information -->
+                <div style="font-size: 10px; text-align: center; margin-top: 15px;">
+                    <div>Guest Name:</div>
+                    <div>Signature:</div>
+                    <div style="margin-top: 10px;">Acknowledgement Number:</div>
+                    <div>TIN:</div>
+                    <div>POS Registration No.:</div>
+                    <div>PTU No.:</div>
+                    <br/>
+                    <div>Courtesy Point Technologies, Inc.</div>
+                    <div>Unit #203, The Peak Tower</div>
+                    <div>107 L.P. Leviste St., Salcedo Village</div>
+                    <div>Makati City, Metro Manila</div>
+                    <div>VAT REG TIN: 225-048-850-00000</div>
+                    <div>Acc. No. 11111111111111111111</div>
+                    <div>Date/Time issued: <t t-esc="props.data.date"/></div>
+                    <div>PTU No.:</div>
+                    <div>Date Issued:</div>
+                </div>
+
+                <div style="border-top: 1px dashed #000; margin: 15px 0;"></div>
+
+                <!-- Sales Invoice Footer -->
+                <div style="font-weight: bold; text-align: center; font-size: 12px;">
                     THIS SERVES AS YOUR SALES INVOICE
                 </div>
-                
             </div>
         </xpath>
     </t>
