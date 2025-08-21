@@ -6,6 +6,7 @@
     'description': 'A sales invoice receipt modifier for POS customizations',
     'author': 'Your Company',
     'depends': ['point_of_sale'],
+    'data': ['views/pos_config_view.xml'],
     'assets': {
         'point_of_sale._assets_pos': [
             'pos_receipt_clean/static/src/xml/receipt.xml',
